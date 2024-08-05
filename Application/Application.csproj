@@ -7,12 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\Lot\Update\" />
-    <Folder Include="Commands\Lot\Delete\" />
-    <Folder Include="Queries\Lot\Get\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.9.2" />
     <PackageReference Include="MediatR" Version="12.4.0" />
   </ItemGroup>
