@@ -1,7 +1,6 @@
 using Application.Behaviors;
 using Application.Commands.Lot.Create;
-using Application.Commands.Lot.Delete;
-using Application.Commands.Lot.Update;
+using Application.Queries.Lot.GetAll;
 using FluentValidation;
 using IdentityServer4.Models;
 using Infrastructure.Identity;
@@ -59,11 +58,9 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddMediatR(config =>
-{
-    config.RegisterServicesFromAssembly(typeof(CreateLotCommand).Assembly);
-    config.RegisterServicesFromAssembly(typeof(DeleteLotCommand).Assembly);
-    config.RegisterServicesFromAssembly(typeof(UpdateLotCommand).Assembly);
+builder.Services.AddMediatR(config => {
+    config.RegisterServicesFromAssembly(typeof(Program).Assembly);
+
 });
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
