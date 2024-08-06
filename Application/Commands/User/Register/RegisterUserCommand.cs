@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Application.Commands.User.Register
 {
-    public class RegisterUserCommand : IRequest
+    public class RegisterUserCommand : IRequest<Unit>
     {
         public string UserName { get; set; }
         public string Password { get; set; }

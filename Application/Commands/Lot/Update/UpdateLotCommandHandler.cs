@@ -3,7 +3,7 @@ using Infrastructure.Data;
 
 namespace Application.Commands.Lot.Update
 {
-    public class UpdateLotCommandHandler : IRequestHandler<UpdateLotCommand, Unit>
+    public class UpdateLotCommandHandler : IRequestHandler<UpdateLotCommand>
     {
         private readonly AppDbContext _context;
 
@@ -12,7 +12,7 @@ namespace Application.Commands.Lot.Update
             _context = context;
         }
 
-        public async Task<Unit> Handle(UpdateLotCommand request, CancellationToken cancellationToken)
+        public async Task Handle(UpdateLotCommand request, CancellationToken cancellationToken)
         {
             var lot = await _context.Lots.FindAsync(request.Id);
             if (lot == null)
@@ -29,8 +29,6 @@ namespace Application.Commands.Lot.Update
 
             _context.Lots.Update(lot);
             await _context.SaveChangesAsync(cancellationToken);
-
-            return Unit.Value;
         }
 
 

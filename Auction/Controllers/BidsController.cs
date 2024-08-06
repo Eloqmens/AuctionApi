@@ -29,6 +29,6 @@ namespace Auction.Controllers
             var query = new GetBidsQuery { LotId = lotId };
             var result = await _mediator.Send(query);
             return Ok(result);
-        }
+        }   
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Application.Commands.Lot.Update
 {
-    public class UpdateLotCommand : IRequest<Unit>
+    public class UpdateLotCommand : IRequest
     {
         public int Id { get; set; }
         public string Title { get; set; }

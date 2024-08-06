@@ -4,6 +4,6 @@ namespace Infrastructure.Identity
 {
     public class AppUser : IdentityUser
     {
-
+        public decimal Balance { get; set; }
     }
 }
