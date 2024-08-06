@@ -1,9 +1,12 @@
 using Application.Behaviors;
 using Application.Commands.Lot.Create;
-using Application.Commands.Lot.Delete;
-using Application.Commands.Lot.Update;
+using Application.Commands.User.Login;
+using Application.Commands.User.Register;
+using Application.Queries.Lot.GetAll;
+using Core.Entities;
 using FluentValidation;
 using IdentityServer4.Models;
+using Infrastructure.Data;
 using Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -16,10 +19,14 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container. 
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                            
+// Add services to the container.
 builder.Services.AddDbContext<AppIdentityDbContext>(options =>
     options.UseInMemoryDatabase("IdentityDb"));
 
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseInMemoryDatabase("AuctionDb"));
 
 builder.Services.AddIdentity<AppUser, IdentityRole>()
     .AddEntityFrameworkStores<AppIdentityDbContext>()
@@ -39,7 +46,6 @@ builder.Services.AddIdentityServer()
     })
     .AddDeveloperSigningCredential();
 
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -53,18 +59,15 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = "https://localhost:5001",
-        ValidAudience = "https://localhost:5001",
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"))
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))   
     };
 });
 
-builder.Services.AddMediatR(config =>
-{
-    config.RegisterServicesFromAssembly(typeof(CreateLotCommand).Assembly);
-    config.RegisterServicesFromAssembly(typeof(DeleteLotCommand).Assembly);
-    config.RegisterServicesFromAssembly(typeof(UpdateLotCommand).Assembly);
-});
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly,
+    typeof(LoginUserCommandHandler).Assembly, typeof(RegisterUserCommandHandler).Assembly,
+    typeof(GetLotsQueryHandler).Assembly));
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
