@@ -25,7 +25,7 @@ namespace Auction.Controllers
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserCommand command)
-        {
+        {   
             var token = await _mediator.Send(command);
             return Ok(new { Token = token });
         }

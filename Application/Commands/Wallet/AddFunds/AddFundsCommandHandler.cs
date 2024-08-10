@@ -34,7 +34,7 @@ namespace Application.Commands.Wallet.AddFunds
             var service = new PaymentIntentService();
             var paymentIntent = await service.CreateAsync(options);
 
-            // Update user's balance
+            
             user.Balance += request.Amount;
             await _userManager.UpdateAsync(user);
 
