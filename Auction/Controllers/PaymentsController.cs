@@ -1,4 +1,5 @@
 ﻿using Application.Commands.Wallet.AddFunds;
+using Application.Commands.Wallet.AddWallet;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,13 @@ namespace Auction.Controllers
         [Authorize]
         [HttpPost("add-funds")]
         public async Task<IActionResult> AddFunds([FromBody] AddFundsCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok();
+        }
+
+        [HttpPost("add-card")]
+        public async Task<IActionResult> AddCard([FromBody] AddCardCommand command)
         {
             await _mediator.Send(command);
             return Ok();
