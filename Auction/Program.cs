@@ -1,7 +1,5 @@
 using Application.Behaviors;
 using Application.Commands.Lot.Create;
-using Application.Commands.User.Login;
-using Application.Commands.User.Register;
 using Application.Queries.Lot.GetAll;
 using Core.Entities;
 using FluentValidation;
@@ -20,8 +18,11 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-                            
+
 // Add services to the container.
+//builder.Services.AddDbContext<AppIdentityDbContext>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("SQLserver")));
+
 builder.Services.AddDbContext<AppIdentityDbContext>(options =>
     options.UseInMemoryDatabase("IdentityDb"));
 
@@ -66,7 +67,6 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly,
-    typeof(LoginUserCommandHandler).Assembly, typeof(RegisterUserCommandHandler).Assembly,
     typeof(GetLotsQueryHandler).Assembly));
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
@@ -112,6 +112,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(x => x
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .SetIsOriginAllowed(origin => true) 
+    .AllowCredentials());
 
 app.UseAuthentication();
 app.UseIdentityServer();

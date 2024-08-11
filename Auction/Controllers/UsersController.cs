@@ -1,6 +1,8 @@
 ﻿using Application.Commands.User.Login;
 using Application.Commands.User.Register;
+using Application.Queries.User;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Auction.Controllers
@@ -25,9 +27,22 @@ namespace Auction.Controllers
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserCommand command)
-        {
+        {   
             var token = await _mediator.Send(command);
             return Ok(new { Token = token });
         }
+
+        [Authorize]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserById(int id)
+        {
+            var user = await _mediator.Send(new GetUserByIdQuery { Id = id });
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
+        }
+
     }
 }
