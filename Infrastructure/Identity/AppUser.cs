@@ -6,6 +6,7 @@ namespace Infrastructure.Identity
     public class AppUser : IdentityUser
     {
         public decimal Balance { get; set; }
-        public string Wallet { get; set; }
+
+        public Wallet Wallet { get; set; }
     }
 }

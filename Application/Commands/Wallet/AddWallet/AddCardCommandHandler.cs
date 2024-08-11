@@ -37,7 +37,7 @@ namespace Application.Commands.Wallet.AddWallet
                 throw new KeyNotFoundException($"Wallet for user with Id {request.UserId} not found.");
             }
 
-            user.Wallet = request.CardNumber;
+            wallet.CardNumber = request.CardNumber;
             await _userManager.UpdateAsync(user);
 
             return Unit.Value;
