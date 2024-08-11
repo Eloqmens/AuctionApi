@@ -11,6 +11,5 @@ namespace Core.Entities
         public string Id { get; set; }
         public string Username { get; set; }
         public string Email { get; set; }
-        public decimal WalletBalance { get; set; }
     }
 }
