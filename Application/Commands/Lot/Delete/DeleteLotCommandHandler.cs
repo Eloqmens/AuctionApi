@@ -2,6 +2,7 @@
 using Core.Entities;
 using Infrastructure.Data;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,15 +22,13 @@ namespace Application.Commands.Lot.Delete
 
         public async Task Handle(DeleteLotCommand request, CancellationToken cancellationToken)
         {
-            var entity = await _context.Lots
-                .FindAsync(new object[] { request }, cancellationToken);
-
-            if (entity == null || entity.UserId != request.UserId)
+            var lot = await _context.Lots.FirstOrDefaultAsync(lot => lot.Id == request.Id, cancellationToken);
+            if (lot == null || lot.UserId != request.UserId)
             {
                 throw new NotFoundException(nameof(Core.Entities.Lot), request.Id);
             }
 
-            _context.Lots.Remove(entity);
+            _context.Lots.Remove(lot);
             await _context.SaveChangesAsync(cancellationToken);
         }
     }

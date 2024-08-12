@@ -13,6 +13,6 @@ namespace Core.Entities
         public DateTime Timestamp { get; set; }
         public int LotId { get; set; }
         public Lot Lot { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
     }
 }

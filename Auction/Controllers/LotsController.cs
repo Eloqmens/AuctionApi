@@ -27,7 +27,7 @@ namespace Auction.Controllers
         }
 
 
-        internal string UserId
+        private string UserId
         {
             get
             {
@@ -79,7 +79,7 @@ namespace Auction.Controllers
         }
 
         [Authorize]
-        [HttpPut("{id}")]
+        [HttpPut]
         public async Task<IActionResult> UpdateLot([FromBody] UpdateLotCommandDto updateLotCommandDto)
         {
 

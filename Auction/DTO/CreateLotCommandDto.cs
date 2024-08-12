@@ -16,16 +16,16 @@ namespace Auction.DTO
         public void Mapping(Profile profile)
         {
             profile.CreateMap<CreateLotCommandDto, CreateLotCommand>()
-                .ForMember(noteCommand => noteCommand.Title,
-                    opt => opt.MapFrom(noteDto => noteDto.Title))
-                .ForMember(noteCommand => noteCommand.Description,
-                    opt => opt.MapFrom(noteDto => noteDto.Description))
-                .ForMember(noteCommand => noteCommand.StartingPrice,
-                    opt => opt.MapFrom(noteDto => noteDto.StartingPrice))
-                .ForMember(noteCommand => noteCommand.EndTime,
-                    opt => opt.MapFrom(noteDto => noteDto.EndTime))
-                .ForMember(noteCommand => noteCommand.CategoryId,
-                    opt => opt.MapFrom(noteDto => noteDto.CategoryId));
+                .ForMember(lotCommand => lotCommand.Title,
+                    opt => opt.MapFrom(lotDto => lotDto.Title))
+                .ForMember(lotCommand => lotCommand.Description,
+                    opt => opt.MapFrom(lotDto => lotDto.Description))
+                .ForMember(lotCommand => lotCommand.StartingPrice,
+                    opt => opt.MapFrom(lotDto => lotDto.StartingPrice))
+                .ForMember(lotCommand => lotCommand.EndTime,
+                    opt => opt.MapFrom(lotDto => lotDto.EndTime))
+                .ForMember(lotCommand => lotCommand.CategoryId,
+                    opt => opt.MapFrom(lotDto => lotDto.CategoryId));
         }
     }
 }

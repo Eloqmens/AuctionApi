@@ -33,10 +33,10 @@ namespace Auction.Controllers
         }
 
         [Authorize]
-        [HttpGet("{id}")]
+        [HttpGet]
         public async Task<IActionResult> GetUserById(int id)
         {
-            var user = await _mediator.Send(new GetUserByIdQuery { Id = id });
+            var user = await _mediator.Send(new GetUserByIdQuery { Id = id});
             if (user == null)
             {
                 return NotFound();
