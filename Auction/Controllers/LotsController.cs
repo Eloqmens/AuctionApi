@@ -80,12 +80,11 @@ namespace Auction.Controllers
 
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateLot(int id, [FromBody] UpdateLotCommand command)
+        public async Task<IActionResult> UpdateLot([FromBody] UpdateLotCommandDto updateLotCommandDto)
         {
-            if (id != command.Id)
-            {
-                return BadRequest("ID in the URL does not match ID in the command.");
-            }
+
+            var command = _mapper.Map<UpdateLotCommand>(updateLotCommandDto);
+            command.UserId = UserId;
 
             await _mediator.Send(command);
             return Ok();
@@ -95,9 +94,9 @@ namespace Auction.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLot(int id)
         {
-            var command = new DeleteLotCommand { Id = id };
+            var command = new DeleteLotCommand { Id = id, UserId = UserId };
             await _mediator.Send(command);
-            return Ok();
+            return NoContent();
         }
     }
 }
