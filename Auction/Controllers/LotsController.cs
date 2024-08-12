@@ -3,9 +3,12 @@ using Application.Commands.Lot.Delete;
 using Application.Commands.Lot.Update;
 using Application.Queries.Lot.Get;
 using Application.Queries.Lot.GetAll;
+using Auction.DTO;
+using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Auction.Controllers
 {
@@ -14,10 +17,32 @@ namespace Auction.Controllers
     public class LotsController : Controller
     {
         private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
+        internal Guid UserId
+        {
+            get
+            {
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return Guid.Empty;
+                }
 
-        public LotsController(IMediator mediator)
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (Guid.TryParse(userIdClaim, out var userId))
+                {
+                    return userId;
+                }
+
+                return Guid.Empty; 
+            }
+        }
+
+
+        public LotsController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -38,8 +63,12 @@ namespace Auction.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> CreateLot([FromBody] CreateLotCommand command)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> CreateLot([FromBody] CreateLotCommandDto createLotCommandDto)
         {
+            var command = _mapper.Map<CreateLotCommand>(createLotCommandDto);
+            command.UserId = UserId;
             var result = await _mediator.Send(command);
             return Ok(result);
         }

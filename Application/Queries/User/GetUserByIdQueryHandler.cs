@@ -17,18 +17,18 @@ namespace Application.Queries.User
             _appDbContext = appDbContext;
         }
 
-        public async Task<Core.Entities.User> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
-        {
-            var user = await _appDbContext.Users.FindAsync(request.Id);
-            if (user == null)
-            {
-                return null;
-            }
+        //public async Task<Core.Entities.User> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
+        //{
+        //    var user = await _appDbContext.Users.FindAsync(request.Id);
+        //    if (user == null)
+        //    {
+        //        return null;
+        //    }
 
-            return new Core.Entities.User
-            {
-                Username = user.Username,
-            };
-        }
+        //    return new Core.Entities.User
+        //    {
+        //        Username = user.Username,
+        //    };
+        //}
     }
 }
