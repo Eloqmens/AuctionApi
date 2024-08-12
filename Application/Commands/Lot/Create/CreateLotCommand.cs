@@ -9,6 +9,6 @@ namespace Application.Commands.Lot.Create
         public decimal StartingPrice { get; set; }
         public DateTime EndTime { get; set; }
         public int CategoryId { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
     }
 }

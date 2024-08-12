@@ -1,6 +1,7 @@
 ﻿using Application.Commands.Lot.Create;
 using Application.Commands.Lot.Delete;
 using Application.Commands.Lot.Update;
+using Application.Interfaces;
 using Application.Queries.Lot.Get;
 using Application.Queries.Lot.GetAll;
 using Auction.DTO;
@@ -18,31 +19,38 @@ namespace Auction.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        internal Guid UserId
-        {
-            get
-            {
-                if (!User.Identity.IsAuthenticated)
-                {
-                    return Guid.Empty;
-                }
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ICurrentUserService _currentUserService;
 
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-                if (Guid.TryParse(userIdClaim, out var userId))
-                {
-                    return userId;
-                }
-
-                return Guid.Empty; 
-            }
-        }
-
-
-        public LotsController(IMediator mediator, IMapper mapper)
+        public LotsController(IMediator mediator, IMapper mapper, IHttpContextAccessor httpContextAccessor, ICurrentUserService currentUserService)
         {
             _mediator = mediator;
             _mapper = mapper;
+        }
+
+
+        internal string UserId
+        {
+            get
+            {
+                // Проверка на null для HttpContext и User
+                if (HttpContext == null || HttpContext.User == null)
+                {
+                    Console.WriteLine("HttpContext or User is null.");
+                    return string.Empty;
+                }
+
+                var userId = HttpContext.User.FindFirst("sub")?.Value
+                             ?? HttpContext.User.FindFirst("jti")?.Value;
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    Console.WriteLine("User identifier (sub or jti) is null or empty.");
+                    return string.Empty;
+                }
+
+                return userId;
+            }
         }
 
         [HttpGet]

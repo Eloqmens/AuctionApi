@@ -73,17 +73,23 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddSingleton<ICurrentUserService, CurrentUserService>();
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly,
     typeof(GetLotsQueryHandler).Assembly));
+
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile(new AssemblyMappingProfile(Assembly.GetExecutingAssembly()));
+    cfg.AddProfile(new AssemblyMappingProfile(typeof(AppDbContext).Assembly));
 });
+
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-builder.Services.AddSingleton<ICurrentUserService, CurrentUserService>();
+
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -157,14 +163,16 @@ static async Task CreateAdminUser(IServiceProvider serviceProvider)
 
 var app = builder.Build();
 
+
+
+await SeedData.InitializeAsync(app.Services);
+
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     await CreateAdminUser(services);
 }
-
-await SeedData.InitializeAsync(app.Services);
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
