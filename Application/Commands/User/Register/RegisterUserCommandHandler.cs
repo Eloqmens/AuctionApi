@@ -22,6 +22,12 @@ namespace Application.Commands.User.Register
             {
                 throw new ApplicationException("User registration failed.");
             }
+            
+            var roleResult = await _userManager.AddToRoleAsync(user, "User");
+            if (!roleResult.Succeeded)
+            {
+                throw new ApplicationException("Failed to assign role.");
+            }
 
             return Unit.Value;
         }

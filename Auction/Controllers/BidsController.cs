@@ -16,7 +16,7 @@ namespace Auction.Controllers
         }
 
         [Authorize]
-        [HttpPost]
+        [HttpPost("{lotId}")]
         public async Task<IActionResult> PlaceBid([FromBody] PlaceBidCommand command)
         {
             await _mediator.Send(command);

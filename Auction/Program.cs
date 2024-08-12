@@ -1,6 +1,10 @@
 using Application.Behaviors;
 using Application.Commands.Lot.Create;
+using Application.Interfaces;
+using Application.Mappings;
 using Application.Queries.Lot.GetAll;
+using Auction;
+using Auction.Services;
 using Core.Entities;
 using FluentValidation;
 using IdentityServer4.Models;
@@ -19,15 +23,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-// Add services to the container.
-//builder.Services.AddDbContext<AppIdentityDbContext>(options =>
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("SQLserver")));
+//Add services to the container.
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SQLserver2")));
 
 builder.Services.AddDbContext<AppIdentityDbContext>(options =>
-    options.UseInMemoryDatabase("IdentityDb"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SQLserver")));
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseInMemoryDatabase("AuctionDb"));
+//builder.Services.AddDbContext<AppIdentityDbContext>(options =>
+//    options.UseInMemoryDatabase("IdentityDb"));
+
+//builder.Services.AddDbContext<AppDbContext>(options =>
+//    options.UseInMemoryDatabase("AuctionDb"));
 
 builder.Services.AddIdentity<AppUser, IdentityRole>()
     .AddEntityFrameworkStores<AppIdentityDbContext>()
@@ -68,11 +75,19 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly,
     typeof(GetLotsQueryHandler).Assembly));
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile(new AssemblyMappingProfile(Assembly.GetExecutingAssembly()));
+});
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+builder.Services.AddSingleton<ICurrentUserService, CurrentUserService>();
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -102,7 +117,54 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+static async Task CreateAdminUser(IServiceProvider serviceProvider)
+{
+    var userManager = serviceProvider.GetRequiredService<UserManager<AppUser>>();
+    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    string adminEmail = "admin@example.com";
+    string adminPassword = "Admin@1234";
+
+    // Проверяем, существует ли уже роль Admin
+    if (!await roleManager.RoleExistsAsync("Admin"))
+    {
+        await roleManager.CreateAsync(new IdentityRole("Admin"));
+    }
+
+    // Проверяем, существует ли уже администратор
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+    if (adminUser == null)
+    {
+        var newAdmin = new AppUser
+        {
+            UserName = adminEmail,
+            Email = adminEmail,
+            EmailConfirmed = true
+        };
+
+        var result = await userManager.CreateAsync(newAdmin, adminPassword);
+        if (result.Succeeded)
+        {
+            // Присваиваем роль Admin новому пользователю
+            await userManager.AddToRoleAsync(newAdmin, "Admin");
+        }
+        else
+        {
+            throw new ApplicationException("Failed to create admin user.");
+        }
+    }
+}
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await CreateAdminUser(services);
+}
+
+await SeedData.InitializeAsync(app.Services);
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
