@@ -7,7 +7,6 @@ namespace Infrastructure.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<User> Users { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Lot> Lots { get; set; }
         public DbSet<Bid> Bids { get; set; }
@@ -16,7 +15,6 @@ namespace Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<User>().HasKey(u => u.Id);
             modelBuilder.Entity<Category>().HasKey(c => c.Id);
             modelBuilder.Entity<Lot>().HasKey(l => l.Id);
             modelBuilder.Entity<Bid>().HasKey(b => b.Id);
@@ -27,12 +25,6 @@ namespace Infrastructure.Data
                 .HasOne(l => l.Category)
                 .WithMany()
                 .HasForeignKey(l => l.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Bid>()
-                .HasOne(b => b.User)
-                .WithMany()
-                .HasForeignKey(b => b.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Bid>()

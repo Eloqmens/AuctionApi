@@ -1,7 +1,10 @@
 using Application.Behaviors;
 using Application.Commands.Lot.Create;
+using Application.Interfaces;
+using Application.Mappings;
 using Application.Queries.Lot.GetAll;
 using Auction;
+using Auction.Services;
 using Core.Entities;
 using FluentValidation;
 using IdentityServer4.Models;
@@ -72,9 +75,15 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly,
     typeof(GetLotsQueryHandler).Assembly));
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile(new AssemblyMappingProfile(Assembly.GetExecutingAssembly()));
+});
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+builder.Services.AddSingleton<ICurrentUserService, CurrentUserService>();
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -155,6 +164,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 await SeedData.InitializeAsync(app.Services);
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

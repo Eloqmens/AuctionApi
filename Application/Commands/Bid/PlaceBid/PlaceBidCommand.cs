@@ -11,6 +11,6 @@ namespace Application.Commands.Bid.PlaceBid
     {
         public int LotId { get; set; }
         public decimal Amount { get; set; }
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
     }
 }

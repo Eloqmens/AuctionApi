@@ -1,4 +1,5 @@
 ﻿using Application.Commands.Lot.Create;
+using Application.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
@@ -7,25 +8,24 @@ using System.Threading.Tasks;
 
 namespace Application.Behaviors
 {
-    public class LoggingBehavior <TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+    public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ICurrentUserService _currentUserService;
 
-        public LoggingBehavior(IHttpContextAccessor httpContextAccessor)
+        public LoggingBehavior(ICurrentUserService currentUserService)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _currentUserService = currentUserService;
         }
 
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = _currentUserService.UserId;
+           
+            Console.WriteLine($"User ID: {userId}");
 
-            if (request is CreateLotCommand createLotCommand)
-            {
-                createLotCommand.UserId = userId;
-            }
+            var response = await next();
 
-            return await next();
+            return response;
         }
     }
 }
