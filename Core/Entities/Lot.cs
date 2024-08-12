@@ -16,6 +16,6 @@ namespace Core.Entities
         public DateTime EndTime { get; set; }
         public int CategoryId { get; set; }
         public Category Category { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
     }
 }

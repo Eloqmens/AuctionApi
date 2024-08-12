@@ -1,6 +1,7 @@
 ﻿using Application.Commands.Lot.Create;
 using Application.Commands.Lot.Delete;
 using Application.Commands.Lot.Update;
+using Application.Interfaces;
 using Application.Queries.Lot.Get;
 using Application.Queries.Lot.GetAll;
 using Auction.DTO;
@@ -18,31 +19,35 @@ namespace Auction.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        internal Guid UserId
-        {
-            get
-            {
-                if (!User.Identity.IsAuthenticated)
-                {
-                    return Guid.Empty;
-                }
-
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-                if (Guid.TryParse(userIdClaim, out var userId))
-                {
-                    return userId;
-                }
-
-                return Guid.Empty; 
-            }
-        }
-
 
         public LotsController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
             _mapper = mapper;
+        }
+
+
+        private string UserId
+        {
+            get
+            {
+                if (HttpContext == null || HttpContext.User == null)
+                {
+                    Console.WriteLine("HttpContext or User is null.");
+                    return string.Empty;
+                }
+
+                var userId = HttpContext.User.FindFirst("sub")?.Value
+                             ?? HttpContext.User.FindFirst("jti")?.Value;
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    Console.WriteLine("User identifier (sub or jti) is null or empty.");
+                    return string.Empty;
+                }
+
+                return userId;
+            }
         }
 
         [HttpGet]
@@ -74,13 +79,12 @@ namespace Auction.Controllers
         }
 
         [Authorize]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateLot(int id, [FromBody] UpdateLotCommand command)
+        [HttpPut]
+        public async Task<IActionResult> UpdateLot([FromBody] UpdateLotCommandDto updateLotCommandDto)
         {
-            if (id != command.Id)
-            {
-                return BadRequest("ID in the URL does not match ID in the command.");
-            }
+
+            var command = _mapper.Map<UpdateLotCommand>(updateLotCommandDto);
+            command.UserId = UserId;
 
             await _mediator.Send(command);
             return Ok();
@@ -90,9 +94,9 @@ namespace Auction.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLot(int id)
         {
-            var command = new DeleteLotCommand { Id = id };
+            var command = new DeleteLotCommand { Id = id, UserId = UserId };
             await _mediator.Send(command);
-            return Ok();
+            return NoContent();
         }
     }
 }

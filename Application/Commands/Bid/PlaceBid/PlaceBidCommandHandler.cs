@@ -1,4 +1,5 @@
-﻿using Infrastructure.Data;
+﻿using Application.Interfaces;
+using Infrastructure.Data;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -11,10 +12,12 @@ namespace Application.Commands.Bid.PlaceBid
     public class PlaceBidCommandHandler : IRequestHandler<PlaceBidCommand, Unit>
     {
         private readonly AppDbContext _context;
+        private readonly ICurrentUserService _currentUserService;
 
-        public PlaceBidCommandHandler(AppDbContext context)
+        public PlaceBidCommandHandler(AppDbContext context, ICurrentUserService currentUserService)
         {
             _context = context;
+            _currentUserService = currentUserService;
         }
 
         public async Task<Unit> Handle(PlaceBidCommand request, CancellationToken cancellationToken)
@@ -35,7 +38,7 @@ namespace Application.Commands.Bid.PlaceBid
             {
                 LotId = request.LotId,
                 Amount = request.Amount,
-                UserId = request.UserId
+                UserId = _currentUserService.UserId,
             };
 
             _context.Bids.Add(bid);

@@ -8,8 +8,8 @@ namespace Application.Commands.Lot.Update
         public string Title { get; set; }
         public string Description { get; set; }
         public decimal StartingPrice { get; set; }
-        public decimal CurrentPrice { get; set; }
         public DateTime EndTime { get; set; }
         public int CategoryId { get; set; }
+        public string UserId { get; set; }
     }
 }

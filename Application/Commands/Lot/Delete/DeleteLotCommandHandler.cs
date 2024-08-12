@@ -1,5 +1,8 @@
-﻿using Infrastructure.Data;
+﻿using Application.Exceptions;
+using Core.Entities;
+using Infrastructure.Data;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Application.Commands.Lot.Delete
 {
-    public class DeleteLotCommandHandler
+    public class DeleteLotCommandHandler : IRequestHandler<DeleteLotCommand>
     {
         private readonly AppDbContext _context;
 
@@ -17,18 +20,16 @@ namespace Application.Commands.Lot.Delete
             _context = context;
         }
 
-        public async Task<Unit> Handle(DeleteLotCommand request, CancellationToken cancellationToken)
+        public async Task Handle(DeleteLotCommand request, CancellationToken cancellationToken)
         {
-            var lot = await _context.Lots.FindAsync(request.Id);
-            if (lot == null)
+            var lot = await _context.Lots.FirstOrDefaultAsync(lot => lot.Id == request.Id, cancellationToken);
+            if (lot == null || lot.UserId != request.UserId)
             {
-                throw new KeyNotFoundException($"Lot with Id {request.Id} not found.");
+                throw new NotFoundException(nameof(Core.Entities.Lot), request.Id);
             }
 
             _context.Lots.Remove(lot);
             await _context.SaveChangesAsync(cancellationToken);
-
-            return Unit.Value;
         }
     }
 }

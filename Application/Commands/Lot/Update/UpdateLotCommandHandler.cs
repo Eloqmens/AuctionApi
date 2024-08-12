@@ -1,31 +1,35 @@
 ﻿using MediatR;
 using Infrastructure.Data;
+using Application.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Application.Exceptions;
 
 namespace Application.Commands.Lot.Update
 {
     public class UpdateLotCommandHandler : IRequestHandler<UpdateLotCommand>
     {
         private readonly AppDbContext _context;
-
-        public UpdateLotCommandHandler(AppDbContext context)
+        private readonly ICurrentUserService _currentUserService;
+        public UpdateLotCommandHandler(AppDbContext context, ICurrentUserService currentUserService)
         {
             _context = context;
+            _currentUserService = currentUserService;
         }
 
         public async Task Handle(UpdateLotCommand request, CancellationToken cancellationToken)
         {
-            var lot = await _context.Lots.FindAsync(request.Id);
-            if (lot == null)
+            var lot = await _context.Lots.FirstOrDefaultAsync(lot => lot.Id == request.Id, cancellationToken);
+            if (lot == null || lot.UserId != request.UserId)
             {
-                throw new KeyNotFoundException($"Lot with Id {request.Id} not found.");
+                throw new NotFoundException(nameof(Core.Entities.Lot), request.Id);
             }
 
             lot.Title = request.Title;
             lot.Description = request.Description;
             lot.StartingPrice = request.StartingPrice;
-            lot.CurrentPrice = request.CurrentPrice;
             lot.EndTime = request.EndTime;
             lot.CategoryId = request.CategoryId;
+            lot.UserId = _currentUserService.UserId;
 
             _context.Lots.Update(lot);
             await _context.SaveChangesAsync(cancellationToken);
