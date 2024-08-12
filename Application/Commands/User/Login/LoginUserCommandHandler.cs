@@ -39,11 +39,14 @@ namespace Application.Commands.User.Login
                 throw new ApplicationException("Invalid login attempt.");
             }
 
+            var roles = await _userManager.GetRolesAsync(user);
+            var roleClaims = roles.Select(role => new Claim(ClaimTypes.Role, role)).ToList();
+
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
+            }.Concat(roleClaims);
 
             var keyString = _configuration["Jwt:Key"];
             var issuer = _configuration["Jwt:Issuer"];

@@ -28,7 +28,6 @@ namespace Application.Queries.User
             return new Core.Entities.User
             {
                 Username = user.Username,
-                WalletBalance = user.WalletBalance
             };
         }
     }

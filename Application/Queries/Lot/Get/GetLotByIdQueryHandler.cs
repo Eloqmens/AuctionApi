@@ -1,9 +1,10 @@
 ﻿using Infrastructure.Data;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Queries.Lot.Get
 {
-    public class GetLotByIdQueryHandler
+    public class GetLotByIdQueryHandler : IRequestHandler<GetLotByIdQuery, Core.Entities.Lot>
     {
         private readonly AppDbContext _context;
 
