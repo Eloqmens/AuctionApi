@@ -14,14 +14,12 @@ namespace Auction.Services
         {
             get
             {
-                // Проверяем, что HttpContext и User не равны null
                 if (_httpContextAccessor.HttpContext == null || _httpContextAccessor.HttpContext.User == null)
                 {
                     Console.WriteLine("HttpContext or User is null.");
                     return string.Empty;
                 }
 
-                // Ищем `sub` или `jti` в зависимости от того, что доступно
                 var id = _httpContextAccessor.HttpContext.User.FindFirst("sub")?.Value
                          ?? _httpContextAccessor.HttpContext.User.FindFirst("jti")?.Value;
 

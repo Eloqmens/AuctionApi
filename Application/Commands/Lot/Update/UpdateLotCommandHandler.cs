@@ -1,15 +1,17 @@
 ﻿using MediatR;
 using Infrastructure.Data;
+using Application.Interfaces;
 
 namespace Application.Commands.Lot.Update
 {
     public class UpdateLotCommandHandler : IRequestHandler<UpdateLotCommand>
     {
         private readonly AppDbContext _context;
-
-        public UpdateLotCommandHandler(AppDbContext context)
+        private readonly ICurrentUserService _currentUserService;
+        public UpdateLotCommandHandler(AppDbContext context, ICurrentUserService currentUserService)
         {
             _context = context;
+            _currentUserService = currentUserService;
         }
 
         public async Task Handle(UpdateLotCommand request, CancellationToken cancellationToken)
@@ -26,6 +28,7 @@ namespace Application.Commands.Lot.Update
             lot.CurrentPrice = request.CurrentPrice;
             lot.EndTime = request.EndTime;
             lot.CategoryId = request.CategoryId;
+            lot.UserId = _currentUserService.UserId;
 
             _context.Lots.Update(lot);
             await _context.SaveChangesAsync(cancellationToken);

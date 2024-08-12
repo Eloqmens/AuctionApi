@@ -19,10 +19,8 @@ namespace Auction.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ICurrentUserService _currentUserService;
 
-        public LotsController(IMediator mediator, IMapper mapper, IHttpContextAccessor httpContextAccessor, ICurrentUserService currentUserService)
+        public LotsController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
             _mapper = mapper;
@@ -33,7 +31,6 @@ namespace Auction.Controllers
         {
             get
             {
-                // Проверка на null для HttpContext и User
                 if (HttpContext == null || HttpContext.User == null)
                 {
                     Console.WriteLine("HttpContext or User is null.");

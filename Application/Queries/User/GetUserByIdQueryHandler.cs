@@ -1,34 +1,21 @@
 ﻿using Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Infrastructure.Identity;
 
 namespace Application.Queries.User
 {
     public class GetUserByIdQueryHandler
     {
-        private readonly AppDbContext _appDbContext;
-        public GetUserByIdQueryHandler(AppDbContext appDbContext)
+
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
+        public GetUserByIdQueryHandler(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
         {
-            _appDbContext = appDbContext;
+            _signInManager = signInManager;
+            _userManager = userManager;
         }
 
-        //public async Task<Core.Entities.User> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
-        //{
-        //    var user = await _appDbContext.Users.FindAsync(request.Id);
-        //    if (user == null)
-        //    {
-        //        return null;
-        //    }
 
-        //    return new Core.Entities.User
-        //    {
-        //        Username = user.Username,
-        //    };
-        //}
+        
     }
 }
