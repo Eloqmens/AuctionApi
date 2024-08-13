@@ -15,23 +15,17 @@ namespace Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Category>().HasKey(c => c.Id);
-            modelBuilder.Entity<Lot>().HasKey(l => l.Id);
-            modelBuilder.Entity<Bid>().HasKey(b => b.Id);
-
-            modelBuilder.Entity<Lot>();
+            modelBuilder.Entity<Category>()
+                .HasMany(c => c.Lots)
+                .WithOne(l => l.Category)
+                .HasForeignKey(l => l.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Lot>()
-                .HasOne(l => l.Category)
-                .WithMany()
-                .HasForeignKey(l => l.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Bid>()
-                .HasOne(b => b.Lot)
-                .WithMany()
+                .HasMany(l => l.Bids)
+                .WithOne(b => b.Lot)
                 .HasForeignKey(b => b.LotId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

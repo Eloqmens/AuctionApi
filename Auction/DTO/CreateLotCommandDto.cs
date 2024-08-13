@@ -12,7 +12,6 @@ namespace Auction.DTO
         public decimal StartingPrice { get; set; }
         public DateTime EndTime { get; set; }
         public int CategoryId { get; set; }
-
         public void Mapping(Profile profile)
         {
             profile.CreateMap<CreateLotCommandDto, CreateLotCommand>()

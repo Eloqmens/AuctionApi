@@ -1,5 +1,8 @@
 using Application.Behaviors;
+using Application.Commands.Category.Create;
+using Application.Commands.Category.Delete;
 using Application.Commands.Lot.Create;
+using Application.Commands.Lot.Delete;
 using Application.Interfaces;
 using Application.Mappings;
 using Application.Queries.Lot.GetAll;
@@ -89,7 +92,6 @@ builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -131,13 +133,11 @@ static async Task CreateAdminUser(IServiceProvider serviceProvider)
     string adminEmail = "admin@example.com";
     string adminPassword = "Admin@1234";
 
-    // Проверяем, существует ли уже роль Admin
     if (!await roleManager.RoleExistsAsync("Admin"))
     {
         await roleManager.CreateAsync(new IdentityRole("Admin"));
     }
 
-    // Проверяем, существует ли уже администратор
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
     if (adminUser == null)
     {
@@ -151,7 +151,6 @@ static async Task CreateAdminUser(IServiceProvider serviceProvider)
         var result = await userManager.CreateAsync(newAdmin, adminPassword);
         if (result.Succeeded)
         {
-            // Присваиваем роль Admin новому пользователю
             await userManager.AddToRoleAsync(newAdmin, "Admin");
         }
         else
