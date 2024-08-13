@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Auction.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class BidsController : Controller
     {
         private readonly IMediator _mediator;
@@ -48,7 +50,7 @@ namespace Auction.Controllers
         {
             var command = _mapper.Map<PlaceBidCommand>(placeBidCommandDto);
             command.UserId = UserId;
-            
+
             await _mediator.Send(command);
             return Ok();
         }

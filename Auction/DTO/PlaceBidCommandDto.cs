@@ -7,7 +7,7 @@ namespace Auction.DTO
 {
     public class PlaceBidCommandDto : IMapWith<PlaceBidCommand>
     {
-        public string LotId { get; set; }
+        public int LotId { get; set; }
         public decimal Amount { get; set; }
 
         public void Mapping(Profile profile) 
