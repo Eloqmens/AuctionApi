@@ -49,7 +49,7 @@ The API allows users to register, log in, create and manage auction lots, bid an
     }
     ```
 
-3. On startup create Admin which will be written to the database:
+3. On startup to be created Admin which will be written to the database:
 - adminEmail = "admin@example.com";
 - adminPassword = "Admin@1234";
 
