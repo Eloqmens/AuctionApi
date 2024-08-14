@@ -28,10 +28,10 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnC
 
 //Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SQLserver2")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SQLserverAuction")));
 
 builder.Services.AddDbContext<AppIdentityDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SQLserver")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SQLserverIdentity")));
 
 //builder.Services.AddDbContext<AppIdentityDbContext>(options =>
 //    options.UseInMemoryDatabase("IdentityDb"));
