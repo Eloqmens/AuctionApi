@@ -65,11 +65,11 @@ The API allows users to register, log in, create and manage auction lots, bid an
 
 Swagger documentation for your API is available at `https://localhost:7130/swagger`. Here you can view all available endpoints and test them.
 
-## Фронтенд
+## Frontend
 
-Фронтенд для этого проекта разработан с использованием Angular. Исходный код и инструкции по установке фронтенд-части находятся в отдельном репозитории:
+The frontend for this project is developed using Angular. The source code and instructions for installing the frontend part are in a separate repository:
 
-- **Репозиторий Auction-Client**: [https://github.com/Eloqmens/Auction-Client](https://github.com/Eloqmens/Auction-Client)
+- **Auction-Client Repository**: [https://github.com/Eloqmens/Auction-Client](https://github.com/Eloqmens/Auction-Client)
 
 ## Development plans
 ### Payment system
