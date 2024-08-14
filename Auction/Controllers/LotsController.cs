@@ -66,7 +66,7 @@ namespace Auction.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -78,7 +78,7 @@ namespace Auction.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         public async Task<IActionResult> UpdateLot([FromBody] UpdateLotCommandDto updateLotCommandDto)
         {
@@ -90,7 +90,7 @@ namespace Auction.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLot(int id)
         {

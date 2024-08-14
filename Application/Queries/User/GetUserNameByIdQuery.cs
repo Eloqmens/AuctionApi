@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Application.Queries.User
 {
-    public class GetUserByIdQuery : IRequest<string>
+    public class GetUserNameByIdQuery : IRequest<string>
     {
-        public int Id { get; set; }
+        public string UserId { get; set; }
     }
 }

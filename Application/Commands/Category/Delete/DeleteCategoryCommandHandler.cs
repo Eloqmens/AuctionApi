@@ -1,5 +1,6 @@
 ﻿using Infrastructure.Data;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Commands.Category.Delete
 {
@@ -14,7 +15,11 @@ namespace Application.Commands.Category.Delete
 
         public async Task<Unit> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
         {
-            var category = await _context.Categories.FindAsync(request.Id);
+            var category = await _context.Categories
+                .Include(c => c.Lots) 
+                .ThenInclude(l => l.Bids)  
+                .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
+
             if (category == null)
             {
                 throw new KeyNotFoundException($"Category with Id {request.Id} not found.");
@@ -22,6 +27,7 @@ namespace Application.Commands.Category.Delete
 
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync(cancellationToken);
+
             return Unit.Value;
         }
     }

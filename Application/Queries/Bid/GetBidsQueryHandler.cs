@@ -16,6 +16,7 @@ namespace Application.Queries.Bid
         public async Task<List<Core.Entities.Bid>> Handle(GetBidsQuery request, CancellationToken cancellationToken)
         {
             return await _context.Bids
+                .Include(l => l.Lot)
                 .Where(b => b.LotId == request.LotId)
                 .ToListAsync(cancellationToken);
         }

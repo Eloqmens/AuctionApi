@@ -22,7 +22,10 @@ namespace Application.Commands.Lot.Delete
 
         public async Task Handle(DeleteLotCommand request, CancellationToken cancellationToken)
         {
-            var lot = await _context.Lots.FirstOrDefaultAsync(lot => lot.Id == request.Id, cancellationToken);
+            var lot = await _context.Lots
+                .Include(l => l.Bids)
+                .FirstOrDefaultAsync(lot => lot.Id == request.Id, cancellationToken);
+
             if (lot == null || lot.UserId != request.UserId)
             {
                 throw new NotFoundException(nameof(Core.Entities.Lot), request.Id);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Core.Entities
@@ -15,7 +16,10 @@ namespace Core.Entities
         public decimal CurrentPrice { get; set; }
         public DateTime EndTime { get; set; }
         public int CategoryId { get; set; }
+        
         public Category Category { get; set; }
         public string UserId { get; set; }
+        [JsonIgnore]
+        public ICollection<Bid> Bids { get; set; }
     }
 }
