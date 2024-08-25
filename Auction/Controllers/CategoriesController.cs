@@ -9,7 +9,7 @@ namespace Auction.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriesController : Controller
+    public class CategoriesController : BaseController
     {
         private readonly IMediator _mediator;
 
@@ -39,8 +39,8 @@ namespace Auction.Controllers
         public async Task<IActionResult> DeleteCategory(int id)
         {
             var command = new DeleteCategoryCommand { Id = id };
-            await _mediator.Send(command);
-            return Ok();
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
     }
 }
