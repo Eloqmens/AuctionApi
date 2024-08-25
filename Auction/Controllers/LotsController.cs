@@ -15,7 +15,7 @@ namespace Auction.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LotsController : Controller
+    public class LotsController : BaseController
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
@@ -24,30 +24,6 @@ namespace Auction.Controllers
         {
             _mediator = mediator;
             _mapper = mapper;
-        }
-
-
-        private string UserId
-        {
-            get
-            {
-                if (HttpContext == null || HttpContext.User == null)
-                {
-                    Console.WriteLine("HttpContext or User is null.");
-                    return string.Empty;
-                }
-
-                var userId = HttpContext.User.FindFirst("sub")?.Value
-                             ?? HttpContext.User.FindFirst("jti")?.Value;
-
-                if (string.IsNullOrEmpty(userId))
-                {
-                    Console.WriteLine("User identifier (sub or jti) is null or empty.");
-                    return string.Empty;
-                }
-
-                return userId;
-            }
         }
 
         [HttpGet]
@@ -80,6 +56,8 @@ namespace Auction.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPut]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UpdateLot([FromBody] UpdateLotCommandDto updateLotCommandDto)
         {
 
@@ -87,11 +65,14 @@ namespace Auction.Controllers
             command.UserId = UserId;
 
             await _mediator.Send(command);
-            return Ok();
+            return NoContent();
         }
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteLot(int id)
         {
             var command = new DeleteLotCommand { Id = id, UserId = UserId };

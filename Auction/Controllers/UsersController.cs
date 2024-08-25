@@ -11,7 +11,7 @@ namespace Auction.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : Controller
+    public class UsersController : BaseController
     {
         private readonly IMediator _mediator;
 

@@ -10,7 +10,7 @@ namespace Auction.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BidsController : Controller
+    public class BidsController : BaseController
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
@@ -19,30 +19,7 @@ namespace Auction.Controllers
         {
             _mediator = mediator;
             _mapper = mapper;
-        }
-
-        private string UserId
-        {
-            get
-            {
-                if (HttpContext == null || HttpContext.User == null)
-                {
-                    Console.WriteLine("HttpContext or User is null.");
-                    return string.Empty;
-                }
-
-                var userId = HttpContext.User.FindFirst("sub")?.Value
-                             ?? HttpContext.User.FindFirst("jti")?.Value;
-
-                if (string.IsNullOrEmpty(userId))
-                {
-                    Console.WriteLine("User identifier (sub or jti) is null or empty.");
-                    return string.Empty;
-                }
-
-                return userId;
-            }
-        }
+        }       
 
         [Authorize]
         [HttpPost("{lotId}")]
@@ -51,8 +28,8 @@ namespace Auction.Controllers
             var command = _mapper.Map<PlaceBidCommand>(placeBidCommandDto);
             command.UserId = UserId;
 
-            await _mediator.Send(command);
-            return Ok();
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
 
         [HttpGet("{lotId}")]
