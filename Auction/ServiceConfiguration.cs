@@ -8,6 +8,7 @@ using FluentValidation;
 using IdentityServer4.Models;
 using Infrastructure.Data;
 using Infrastructure.Identity;
+using Infrastructure.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -23,6 +24,25 @@ namespace Auction
     {         
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
+            // Настройка CORS
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins(
+                            "http://localhost:3000",
+                            "https://localhost:3000",
+                            "http://localhost:4200", 
+                            "https://localhost:4200",
+                            "http://localhost:7130",
+                            "https://localhost:7130"
+                        )
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                });
+            });
+
             // Добавление контекстов базы данных
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("SQLserverAuction")));
@@ -72,6 +92,9 @@ namespace Auction
             // Регистрация зависимостей
             services.AddSingleton<ICurrentUserService, CurrentUserService>();
             services.AddHttpContextAccessor();
+            
+            // Регистрация сервиса Cloudflare R2
+            services.AddScoped<ICloudflareR2Service, CloudflareR2Service>();
 
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
                 typeof(Program).Assembly,
@@ -84,6 +107,7 @@ namespace Auction
             });
 
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+            services.AddValidatorsFromAssembly(typeof(GetLotsQueryHandler).Assembly);
 
             // Поведение MediatR
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));

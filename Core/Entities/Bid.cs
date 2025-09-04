@@ -10,7 +10,7 @@ namespace Core.Entities
     {
         public int Id { get; set; }
         public decimal Amount { get; set; }
-        public DateTime Timestamp { get; set; }
+        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
         public int LotId { get; set; }
         public Lot Lot { get; set; }
         public string UserId { get; set; }

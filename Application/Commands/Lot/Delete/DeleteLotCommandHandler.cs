@@ -1,4 +1,5 @@
 ﻿using Application.Exceptions;
+using Application.Interfaces;
 using Core.Entities;
 using Infrastructure.Data;
 using MediatR;
@@ -26,10 +27,12 @@ namespace Application.Commands.Lot.Delete
                 .Include(l => l.Bids)
                 .FirstOrDefaultAsync(lot => lot.Id == request.Id, cancellationToken);
 
-            if (lot == null || lot.UserId != request.UserId)
+            if (lot == null)
             {
                 throw new NotFoundException(nameof(Core.Entities.Lot), request.Id);
             }
+
+            
 
             _context.Lots.Remove(lot);
             await _context.SaveChangesAsync(cancellationToken);

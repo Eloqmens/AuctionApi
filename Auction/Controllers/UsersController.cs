@@ -1,11 +1,7 @@
 ﻿using Application.Commands.User.Login;
-using Application.Commands.User.Logout;
 using Application.Commands.User.Register;
-using Application.Queries.User;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Auction.Controllers
 {

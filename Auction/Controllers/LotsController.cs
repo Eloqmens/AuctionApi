@@ -1,7 +1,6 @@
 ﻿using Application.Commands.Lot.Create;
 using Application.Commands.Lot.Delete;
 using Application.Commands.Lot.Update;
-using Application.Interfaces;
 using Application.Queries.Lot.Get;
 using Application.Queries.Lot.GetAll;
 using Auction.DTO;
@@ -9,7 +8,6 @@ using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Auction.Controllers
 {
@@ -27,9 +25,15 @@ namespace Auction.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetLots()
+        public async Task<IActionResult> GetLots([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] int? categoryId = null, [FromQuery] string? searchTerm = null)
         {
-            var query = new GetLotsQuery();
+            var query = new GetLotsQuery 
+            { 
+                PageNumber = pageNumber, 
+                PageSize = pageSize, 
+                CategoryId = categoryId,
+                SearchTerm = searchTerm
+            };
             var result = await _mediator.Send(query);
             return Ok(result);
         }

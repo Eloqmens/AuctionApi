@@ -15,8 +15,18 @@ namespace Application.Queries.Lot.Get
 
         public async Task<Core.Entities.Lot> Handle(GetLotByIdQuery request, CancellationToken cancellationToken)
         {
-            return await _context.Lots.Include(l => l.Category)
+            var lot = await _context.Lots
+                .Include(l => l.Category)
                 .FirstOrDefaultAsync(l => l.Id == request.Id, cancellationToken);
+
+            if (lot != null)
+            {
+                lot.Images = await _context.LotImages
+                    .Where(img => img.LotId == lot.Id)
+                    .ToListAsync(cancellationToken);
+            }
+
+            return lot;
         }
     }
 }

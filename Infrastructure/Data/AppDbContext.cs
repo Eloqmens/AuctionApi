@@ -10,6 +10,7 @@ namespace Infrastructure.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Lot> Lots { get; set; }
         public DbSet<Bid> Bids { get; set; }
+        public DbSet<LotImage> LotImages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,6 +26,12 @@ namespace Infrastructure.Data
                 .HasMany(l => l.Bids)
                 .WithOne(b => b.Lot)
                 .HasForeignKey(b => b.LotId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Lot>()
+                .HasMany(l => l.Images)
+                .WithOne()
+                .HasForeignKey(i => i.LotId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
